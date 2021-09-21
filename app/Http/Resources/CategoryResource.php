@@ -20,4 +20,11 @@ class CategoryResource extends JsonResource
             'description' => $this->description
         ];
     }
+
+    public function with($request)
+    {
+        return [
+            'ok' => true
+        ];
+    }
 }

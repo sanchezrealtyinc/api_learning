@@ -6,7 +6,8 @@ use App\Http\Requests\CreateEmploymentRequest;
 use App\Http\Resources\EmploymentResource;
 use App\Models\Employment;
 use App\Models\Person;
-use Symfony\Component\HttpFoundation\Response;
+//Manejar el status code de la respuesta
+//use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,7 +54,9 @@ class EmploymentController extends Controller
 
             DB::commit();
 
-            return response($employment, Response::HTTP_CREATED);
+            return (new EmploymentResource($employment))->additional([
+                'message' => 'Employee added successfully'
+            ]);
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -101,7 +104,9 @@ class EmploymentController extends Controller
             'salary'
         ));
 
-        return response($employment, Response::HTTP_ACCEPTED);
+        return (new EmploymentResource($employment))->additional([
+            'message' => 'Employee updated successfully'
+        ]);
     }
 
     /**
@@ -113,6 +118,8 @@ class EmploymentController extends Controller
     public function destroy(Employment $employment)
     {
         $employment->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return (new EmploymentResource($employment))->additional([
+            'message' => 'Employee removed successfully'
+        ]);
     }
 }

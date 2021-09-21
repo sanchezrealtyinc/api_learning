@@ -25,4 +25,11 @@ class ProductResource extends JsonResource
             'category' => new CategoryResource(Category::find($this->category_id))
         ];
     }
+
+    public function with($request)
+    {
+        return [
+            'ok' => true
+        ];
+    }
 }

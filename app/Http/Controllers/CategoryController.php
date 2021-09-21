@@ -30,7 +30,9 @@ class CategoryController extends Controller
     {
         $category = Category::create($request->only('name', 'description'));
 
-        return response($category, Response::HTTP_CREATED);
+        return (new CategoryResource($category))->additional([
+            'message' => 'Category added Successfully'
+        ]);
     }
 
     /**
@@ -58,7 +60,9 @@ class CategoryController extends Controller
         //También se puede implementar con ($request, $id)
         $category->update($request->only('name', 'description'));
 
-        return response($category, Response::HTTP_ACCEPTED);
+        return (new CategoryResource($category))->additional([
+            'message' => 'Category updated Successfully'
+        ]);
     }
 
     /**
@@ -70,6 +74,8 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return (new CategoryResource($category))->additional([
+            'message' => 'Category removed Successfully'
+        ]);
     }
 }

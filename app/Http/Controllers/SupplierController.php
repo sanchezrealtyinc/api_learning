@@ -52,7 +52,9 @@ class SupplierController extends Controller
 
             DB::commit();
 
-            return response($supplier, Response::HTTP_CREATED);
+            return (new SupplierResource($supplier))->additional([
+                'message' => 'Supplier added Successfully'
+            ]);
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -98,7 +100,9 @@ class SupplierController extends Controller
             'phone_number'
         ));
 
-        return response($supplier, Response::HTTP_ACCEPTED);
+        return (new SupplierResource($supplier))->additional([
+            'message' => 'Supplier updated Successfully'
+        ]);
     }
 
     /**
@@ -110,6 +114,8 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         $supplier->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return (new SupplierResource($supplier))->additional([
+            'message' => 'Supplier removed Successfully'
+        ]);
     }
 }

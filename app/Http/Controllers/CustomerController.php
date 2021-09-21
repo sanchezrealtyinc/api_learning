@@ -54,7 +54,9 @@ class CustomerController extends Controller
 
             DB::commit();
 
-            return response($customer, Response::HTTP_CREATED);
+            return (new CustomerResource($customer))->additional([
+                'message' => 'Customer added Successfully'
+            ]);
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -102,7 +104,9 @@ class CustomerController extends Controller
             'limit_credit'
         ));
 
-        return response($customer, Response::HTTP_ACCEPTED);
+        return (new CustomerResource($customer))->additional([
+            'message' => 'Customer updated Successfully'
+        ]);
     }
 
     /**
@@ -114,6 +118,8 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return (new CustomerResource($customer))->additional([
+            'message' => 'Customer removed Successfully'
+        ]);
     }
 }

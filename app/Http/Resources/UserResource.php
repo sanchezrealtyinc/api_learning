@@ -22,4 +22,11 @@ class UserResource extends JsonResource
             'personal_info' => new PersonResource(Person::find($this->person_id)) 
         ];
     }
+
+    public function with($request)
+    {
+        return [
+            'ok' => true
+        ];
+    }
 }

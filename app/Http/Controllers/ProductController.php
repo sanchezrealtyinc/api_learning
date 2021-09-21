@@ -37,7 +37,9 @@ class ProductController extends Controller
             'category_id'
         ));
         
-        return response($product, Response::HTTP_CREATED);
+        return (new ProductResource($product))->additional([
+            'message' => 'Product added Successfully'
+        ]);
     }
 
     /**
@@ -70,7 +72,9 @@ class ProductController extends Controller
             'category_id'
         ));
 
-        return response($product, Response::HTTP_ACCEPTED);
+        return (new ProductResource($product))->additional([
+            'message' => 'Product updated Successfully'
+        ]);
     }
 
     public function filters(Request $request){
@@ -120,6 +124,8 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return (new ProductResource($product))->additional([
+            'message' => 'Product removed Successfully'
+        ]);
     }
 }
