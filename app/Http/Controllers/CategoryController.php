@@ -6,7 +6,7 @@ use App\Http\Requests\CreateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+//use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {

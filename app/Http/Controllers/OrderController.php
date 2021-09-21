@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
@@ -13,7 +19,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        return OrderResource::collection(Order::with('orderItems')->get());
     }
 
     /**
@@ -24,40 +30,51 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        try {
+            DB::beginTransaction();
+            
+            $order = new Order();
+            $order->order_date = $request->input('order_date');
+            $order->order_status = $request->input('order_status');
+            $order->promotion_code = $request->input('promotion_code');
+            $order->customer_id = $request->input('customer_id');
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+            $order->save();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+            $lineItems = [];
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            foreach($request->input('products') as $item){
+                $product = Product::find($item['product_id']);
+
+                $orderItem = new OrderItem();
+                $orderItem->order_id = $order->id;
+                $orderItem->product_id = $product->id;
+                $orderItem->unit_price = $product->minimun_price;
+                $orderItem->quantity = $item['quantity'];
+
+                $orderItem->save();
+
+                $lineItems[] = [
+                    'name' => $product->name,
+                    'amount' => $item['quantity'] * $product->minimun_price,
+                    'currency' => $product->price_currency
+                ];
+            }
+
+            $result = [
+                'order' => $order,
+                'payment_method_types' => ['card'],
+                'line_items' => $lineItems
+            ];
+
+            return response($result, Response::HTTP_OK);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response([
+                'error' => $e->getMessage()
+            ],400);
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+//use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
