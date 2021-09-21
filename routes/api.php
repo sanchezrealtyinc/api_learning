@@ -4,9 +4,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmploymentController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,15 +39,17 @@ Route::prefix('admin')->group(function(){
     common('scope.admin');
 
     Route::middleware(['auth:sanctum', 'scope.admin'])->group(function(){
-        //TODO orders - inventory
-        Route::resource('categories', CategoryController::class);
-        Route::resource('products', ProductController::class);
-        Route::resource('customers', CustomerController::class);
-        Route::resource('suppliers', SupplierController::class);
-        Route::resource('employments', EmploymentController::class);
-        Route::resource('warehouses', WarehouseController::class);
+        //TODO inventory
+        Route::apiResource('categories', CategoryController::class);
+        Route::apiResource('products', ProductController::class);
+        Route::apiResource('customers', CustomerController::class);
+        Route::apiResource('suppliers', SupplierController::class);
+        Route::apiResource('employments', EmploymentController::class);
+        Route::apiResource('warehouses', WarehouseController::class);
+        Route::get('orders', [OrderController::class, 'index']);
     });
 });
+
 //Regular User
 Route::prefix('regularUser')->group(function(){
     common('scope.regularUser');
@@ -55,4 +59,8 @@ Route::prefix('regularUser')->group(function(){
         Route::get('products', [ProductController::class, 'index']);
         Route::get('products/filter', [ProductController::class, 'filters']);
     }); 
+});
+
+Route::prefix('checkout')->group(function(){
+    Route::post('orders', [OrderController::class, 'store']);
 });
