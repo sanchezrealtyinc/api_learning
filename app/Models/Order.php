@@ -15,7 +15,11 @@ class Order extends Model
     const ORDER_INACTIVE = 'INACTIVE';
 
     protected $fillable = [];
-    //protected $ordersItems = OrderItem::all();
+    
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 
     public function orderItems(){
         return $this->hasMany(OrderItem::class);
