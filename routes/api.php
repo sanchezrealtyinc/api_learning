@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmploymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,12 +37,13 @@ Route::prefix('admin')->group(function(){
     common('scope.admin');
 
     Route::middleware(['auth:sanctum', 'scope.admin'])->group(function(){
-        //TODO orders - warehouse - inventory
+        //TODO orders - inventory
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
         Route::resource('customers', CustomerController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('employments', EmploymentController::class);
+        Route::resource('warehouses', WarehouseController::class);
     });
 });
 //Regular User

@@ -14,7 +14,9 @@ class Warehouse extends Model
     const WAREHOUSE_ACTIVE = 'ACTIVE';
     const WAREHOUSE_INACTIVE = 'INACTIVE';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'name'
+    ];
 
     public function locations(){
         return $this->belongsTo(Location::class);
