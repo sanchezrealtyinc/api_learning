@@ -2,7 +2,13 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -12,9 +18,7 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-    protected $dontReport = [
-        //
-    ];
+    protected $dontReport = [];
 
     /**
      * A list of the inputs that are never flashed for validation exceptions.
@@ -27,6 +31,63 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    public function report(Throwable $exception)
+    {
+        parent::report($exception);
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => 'error',
+                'error' => 'Unauthenticated'
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            abort(JsonResponse::HTTP_METHOD_NOT_ALLOWED, 'Method not allowed');
+        }
+
+        if($exception instanceof ModelNotFoundException){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'There is no instance with the specified Id'
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        if ($request->isJson() && $exception instanceof ValidationException) {
+            return response()->json([
+                'status' => 'error',
+                'message' => [
+                    'errors' => $exception->getMessage(),
+                    'fields' => $exception->validator->getMessageBag()->toArray()
+                ]
+            ], JsonResponse::HTTP_PRECONDITION_FAILED);
+        }
+
+        if($exception instanceof NotFoundHttpException){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The specified URL Not Found'
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        if($exception instanceof HttpException){
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ], $exception->getStatusCode());
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unexpected failure, try again'
+        ],JsonResponse::HTTP_SERVICE_UNAVAILABLE);
+
+        return parent::render($request, $exception);
+    }
+
     /**
      * Register the exception handling callbacks for the application.
      *
@@ -37,5 +98,6 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
     }
 }

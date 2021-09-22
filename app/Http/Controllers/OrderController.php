@@ -44,8 +44,9 @@ class OrderController extends Controller
             $lineItems = [];
 
             foreach($request->input('products') as $item){
+                
                 $product = Product::find($item['product_id']);
-
+                
                 $orderItem = new OrderItem();
                 $orderItem->order_id = $order->id;
                 $orderItem->product_id = $product->id;
