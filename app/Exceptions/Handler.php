@@ -2,13 +2,13 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -80,12 +80,15 @@ class Handler extends ExceptionHandler
             ], $exception->getStatusCode());
         }
 
+        if(config('app.debug')){
+            return parent::render($request, $exception);
+        }
+
         return response()->json([
             'status' => 'error',
             'message' => 'Unexpected failure, try again'
         ],JsonResponse::HTTP_SERVICE_UNAVAILABLE);
 
-        return parent::render($request, $exception);
     }
 
     /**

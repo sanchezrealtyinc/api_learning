@@ -62,6 +62,8 @@ class OrderController extends Controller
                 ];
             }
 
+            DB::commit();
+
             $result = [
                 'order' => $order,
                 'payment_method_types' => ['card'],
