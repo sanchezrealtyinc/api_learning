@@ -10,3 +10,7 @@
 ## About Project Laravel
 
 Ecommerce Developed with rest architecture in Laravel 8
+
+## Documentation of API REST in Laravel 8 
+
+View documentation [https://documenter.getpostman.com/view/17547991/UUxxg8K2]
