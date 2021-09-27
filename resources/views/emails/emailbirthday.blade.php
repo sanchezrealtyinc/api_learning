@@ -7,6 +7,6 @@
     <title>Send Email</title>
 </head>
 <body>
-    {{ $title }}
+    <p>{{ $title }}</p>
 </body>
 </html>
