@@ -48,9 +48,19 @@ class SendEmailBirthday implements ShouldQueue
         
         $this->birthday = $user->birthday;
         
-        $isBirthday = Carbon::createFromDate($this->birthday)->isBirthday();
+        /*
+        Procesamiento de fechas con carbon
+        $currentDate = Carbon::now();
+        $birthday = Carbon::createFromDate(date(($this->birthday)));
 
-        if($isBirthday){
+        condicion: if($currentDate->day===$birthday->day && $currentDate->month===$birthday->month) 
+        */
+        
+        $currentDate = date('d-m');
+        $birthday = date('d-m', strtotime($this->birthday));
+        
+        
+        if($currentDate == $birthday){
             Mail::to($this->emailUser)->send($birthdayEmail);
         }
         

@@ -72,7 +72,7 @@ class AuthController extends Controller
             $request->user()->person_id,  
             $request->user()->email
         );
-        
+
         $user = $request->user();
             
         return new UserResource($user);
