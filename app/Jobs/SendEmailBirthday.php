@@ -2,12 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Resources\UserResource;
 use App\Mail\EmailBirthday;
 use App\Models\Person;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -43,8 +40,8 @@ class SendEmailBirthday implements ShouldQueue
     public function handle()
     {
         $user = Person::find($this->personId);
-        
-        $birthdayEmail = new EmailBirthday($this->title, $user);
+        $fullName = $user->getFullName();
+        $birthdayEmail = new EmailBirthday($this->title, $fullName);
         
         $this->birthday = $user->birthday;
         
@@ -58,7 +55,6 @@ class SendEmailBirthday implements ShouldQueue
         
         $currentDate = date('d-m');
         $birthday = date('d-m', strtotime($this->birthday));
-        
         
         if($currentDate == $birthday){
             Mail::to($this->emailUser)->send($birthdayEmail);

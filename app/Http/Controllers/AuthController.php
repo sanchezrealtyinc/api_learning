@@ -66,9 +66,10 @@ class AuthController extends Controller
     }
 
     public function user(Request $request){
-        //Jobs for notification birthday user
+        //Jobs for notification birthday user authenticated
+        $title = 'Happy Birthday! May this day be special and live it great. And may your life be long and full of happiness. I wish you the best because you deserve it.';
         SendEmailBirthday::dispatch(
-            'Feliz cumpleaños',
+            $title,
             $request->user()->person_id,  
             $request->user()->email
         );

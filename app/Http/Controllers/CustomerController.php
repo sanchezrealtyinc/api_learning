@@ -6,7 +6,6 @@ use App\Http\Requests\CreateCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Models\Person;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +18,9 @@ class CustomerController extends Controller
      */
     public function index()
     {
+
         $customers = Customer::all();
+        
         return CustomerResource::collection($customers);
     }
 

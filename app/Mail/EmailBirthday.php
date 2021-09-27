@@ -14,16 +14,15 @@ class EmailBirthday extends Mailable implements ShouldQueue
     public $subject = 'Happy BirthDay, ';
     protected $title;
     protected $fullName;
-    protected $user; 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($title, $user)
+    public function __construct($title, $fullName)
     {
         $this->title = $title;
-        $this->user = $user;
+        $this->fullName = $fullName;
     }
 
     /**
@@ -33,8 +32,6 @@ class EmailBirthday extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        $this->fullName = $this->user->first_name . ' ' . $this->user->last_name;
-
         return $this->from('em@leader.com', 'Em Leader')
                     ->subject($this->subject . ' ' . $this->fullName )
                     ->view('emails.emailbirthday')
