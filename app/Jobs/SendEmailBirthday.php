@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Resources\UserResource;
 use App\Mail\EmailBirthday;
-use App\Models\User;
+use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -19,7 +19,7 @@ class SendEmailBirthday implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $title;
-    protected $userId;
+    protected $personId;
     protected $fullName;
     protected $emailUser;
     protected $birthday;
@@ -28,10 +28,10 @@ class SendEmailBirthday implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($title, $userId, $emailUser)
+    public function __construct($title, $personId, $emailUser)
     {
         $this->title = $title;
-        $this->userId = $userId;
+        $this->personId = $personId;
         $this->emailUser = $emailUser;
     }
 
@@ -42,15 +42,14 @@ class SendEmailBirthday implements ShouldQueue
      */
     public function handle()
     {
-        $user = new UserResource(User::find($this->userId));
-        $this->fullName = $user->personal_info->first_name . ' ' . $user->personal_info->last_name;
-
-        $birthdayEmail = new EmailBirthday($this->title, $this->fullName);
+        $user = Person::find($this->personId);
         
-        $this->birthday = $user->personal_info->birthday;
-
+        $birthdayEmail = new EmailBirthday($this->title, $user);
+        
+        $this->birthday = $user->birthday;
+        
         $isBirthday = Carbon::createFromDate($this->birthday)->isBirthday();
-        
+
         if($isBirthday){
             Mail::to($this->emailUser)->send($birthdayEmail);
         }

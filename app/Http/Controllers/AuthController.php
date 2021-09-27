@@ -67,11 +67,12 @@ class AuthController extends Controller
 
     public function user(Request $request){
         //Jobs for notification birthday user
-        /*SendEmailBirthday::dispatch(
+        SendEmailBirthday::dispatch(
             'Feliz cumpleaños',
-            $request->user()->id,  
+            $request->user()->person_id,  
             $request->user()->email
-        );*/
+        );
+        
         $user = $request->user();
             
         return new UserResource($user);
