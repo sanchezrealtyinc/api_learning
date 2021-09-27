@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
+use App\Jobs\SendEmailBirthday;
 use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -65,9 +66,14 @@ class AuthController extends Controller
     }
 
     public function user(Request $request){
-        
+        //Jobs for notification birthday user
+        /*SendEmailBirthday::dispatch(
+            'Feliz cumpleaños',
+            $request->user()->id,  
+            $request->user()->email
+        );*/
         $user = $request->user();
-        
+            
         return new UserResource($user);
     }
 
