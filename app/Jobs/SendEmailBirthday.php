@@ -44,11 +44,13 @@ class SendEmailBirthday implements ShouldQueue
     {
         $user = new UserResource(User::find($this->userId));
         $this->fullName = $user->personal_info->first_name . ' ' . $user->personal_info->last_name;
+
         $birthdayEmail = new EmailBirthday($this->title, $this->fullName);
         
         $this->birthday = $user->personal_info->birthday;
 
-        $isBirthday = Carbon::createFromDate($this->birthday);
+        $isBirthday = Carbon::createFromDate($this->birthday)->isBirthday();
+        
         if($isBirthday){
             Mail::to($this->emailUser)->send($birthdayEmail);
         }

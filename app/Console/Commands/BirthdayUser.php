@@ -48,9 +48,9 @@ class BirthdayUser extends Command
         $users = DB::table('people')->whereDay('birthday', $currentDate->day)->whereMonth('birthday', $currentDate->month)->get();
         
         foreach($users as $user){
-            $userResource = new UserResource($user);
+            
             $title = 'Happy Birthday! May this day be special and live it great. And may your life be long and full of happiness. I wish you the best because you deserve it.';
-            $birthdayEmail = new EmailBirthday($title, $userResource);
+            $birthdayEmail = new EmailBirthday($title, $user);
             Mail::to('em@admin.com')->send($birthdayEmail);
             $i++;
         }
