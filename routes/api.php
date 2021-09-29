@@ -39,9 +39,11 @@ Route::prefix('admin')->group(function(){
 
     Route::middleware(['auth:sanctum', 'scope.admin'])->group(function(){
         //TODO inventory
-        Route::get('regularUsers', [RegularUserController::class, 'index']);
+        Route::get('regular-users', [RegularUserController::class, 'index']);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('products', ProductController::class);
+        Route::post('products-import', [ProductController::class, 'importCsv']);
+        Route::get('products-batch', [ProductController::class, 'productImportProgress']);
         Route::apiResource('customers', CustomerController::class);
         Route::apiResource('suppliers', SupplierController::class);
         Route::apiResource('employments', EmploymentController::class);

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Jobs\ProcessProductsCsv;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
+
 //use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
@@ -20,12 +23,6 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $product = Product::create($request->only(
@@ -42,25 +39,46 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function importCsv(Request $request){
+        if(request()->has('productscsv')){
+            $productsFile = file(request()->productscsv);
+            $sizeFiles = sizeof($productsFile);
+            $perFile = $sizeFiles; 
+
+            if($sizeFiles >= 2000){
+                $perFile = 1000;
+            }
+            //Divide el array en varios arrays del mismo tamaño
+            $chunks = array_chunk($productsFile, $perFile);
+
+            $header = [];
+
+            $batch = Bus::batch([])->dispatch();
+
+            foreach($chunks as $key=> $chunk){
+
+                $product = array_map('str_getcsv', $chunk);
+
+                if($key === 0){
+                    $header = $product[0];
+                    unset($product[0]);
+                }
+                $batch->add(new ProcessProductsCsv($product, $header));
+            }
+            return $batch;
+        }
+    }
+
+    public function productImportProgress(){
+        $batchId = (int) request('id');
+        return Bus::findBatch($batchId);
+    }
+
     public function show(Product $product)
     {
         return new ProductResource($product);
     }
 
-   
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Product $product)
     {
         $product->update($request->only(
@@ -115,12 +133,6 @@ class ProductController extends Controller
         ];
     } 
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Product $product)
     {
         $product->delete();
